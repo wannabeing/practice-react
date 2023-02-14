@@ -22,13 +22,12 @@ const Auth = () => {
     event.preventDefault();
 
     try {
-      let data;
       if (newAccount) {
         // 계정생성
-        data = await fbAuth.createUserWithEmailAndPassword(email, password);
+        await fbAuth.createUserWithEmailAndPassword(email, password);
       } else {
         // 로그인
-        data = await fbAuth.signInWithEmailAndPassword(email, password);
+        await fbAuth.signInWithEmailAndPassword(email, password);
       }
     } catch (error) {
       setErrorMsg(error.message);
@@ -53,10 +52,7 @@ const Auth = () => {
       provider = new fb.auth.GithubAuthProvider();
     }
 
-    console.log(provider);
-
-    const data = await fbAuth.signInWithPopup(provider);
-    console.log(data);
+    await fbAuth.signInWithPopup(provider);
   };
 
   return (
