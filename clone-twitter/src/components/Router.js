@@ -5,7 +5,7 @@ import Home from "routes/Home";
 import Profile from "routes/Profile";
 import Navigation from "components/Navgation";
 
-const Router = ({ isLoggedIn }) => {
+const AppRouter = ({ isLoggedIn, userInfo }) => {
   return (
     <HashRouter>
       {isLoggedIn && <Navigation />}
@@ -13,7 +13,7 @@ const Router = ({ isLoggedIn }) => {
         {isLoggedIn ? (
           <>
             <Route exact path="/">
-              <Home />
+              <Home userInfo={userInfo} />
             </Route>
             <Route exact path="/profile">
               <Profile />
@@ -29,4 +29,4 @@ const Router = ({ isLoggedIn }) => {
   );
 };
 
-export default Router;
+export default AppRouter;

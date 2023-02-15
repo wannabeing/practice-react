@@ -1,32 +1,33 @@
+import Tweet from "components/Tweet";
 import { fbStore } from "fb";
 import React, { useEffect, useState } from "react";
 
-const Home = () => {
+const Home = ({ userInfo }) => {
   const [tweet, setTweet] = useState("");
-  const [tweetList, setTweetList] = useState([]);
+  const [tweets, setTweets] = useState([]);
 
   useEffect(() => {
-    getTweetList();
+    // DB가 뭔가를 할 때마다 트윗리스트 갱신
+    fbStore
+      .collection("tweets")
+      .orderBy("createdAt", "desc")
+      .onSnapshot((snapshot) => {
+        const updatedTweets = snapshot.docs.map((document) => ({
+          pid: document.id,
+          ...document.data(),
+        }));
+        setTweets(updatedTweets);
+      });
   }, []);
 
-  // firebaseStore에서 트윗 리스트 가져오는 함수
-  const getTweetList = async () => {
-    const fromFB = await fbStore.collection("tweets").get();
-    fromFB.forEach((document) => {
-      const newTweet = {
-        id: document.id, // id 저장
-        ...document.data(), // 그 외 데이터 저장
-      };
-      setTweetList((prev) => [newTweet, ...prev]);
-    });
-  };
   // 폼 제출 함수
   const onSumbit = async (event) => {
     event.preventDefault();
     // fireStore에 저장
     await fbStore.collection("tweets").add({
-      tweet,
+      text: tweet,
       createdAt: Date.now(),
+      uid: userInfo.uid, // 작성자 id 저장
     });
     setTweet(""); // 초기화
   };
@@ -49,10 +50,12 @@ const Home = () => {
       </form>
 
       <div>
-        {tweetList.map((tweet) => (
-          <div key={tweet.id}>
-            <h4>{tweet.tweet}</h4>
-          </div>
+        {tweets.map((tweet) => (
+          <Tweet
+            key={tweet.pid}
+            tweet={tweet}
+            isOwner={tweet.uid === userInfo.uid}
+          />
         ))}
       </div>
     </div>
