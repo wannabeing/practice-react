@@ -1,4 +1,4 @@
-import { fbStore } from "fb";
+import { fbStorage, fbStore } from "fb";
 import React, { useState } from "react";
 
 const Tweet = ({ tweet, isOwner }) => {
@@ -9,8 +9,11 @@ const Tweet = ({ tweet, isOwner }) => {
   const onDel = async () => {
     const isDel = window.confirm("트윗을 삭제하시겠습니까?");
     if (isDel) {
-      // DB에서 삭제
-      await fbStore.doc(`tweets/${tweet.pid}`).delete();
+      await fbStore.doc(`tweets/${tweet.pid}`).delete(); // 트윗 글 삭제
+
+      if (tweet.fbImgUrl !== "") {
+        await fbStorage.refFromURL(tweet.fbImgUrl).delete(); // 이미지 파일 삭제
+      }
     }
   };
   // 수정모드 함수
@@ -52,6 +55,9 @@ const Tweet = ({ tweet, isOwner }) => {
         </>
       ) : (
         <>
+          {tweet.fbImgUrl && (
+            <img src={tweet.fbImgUrl} width="50" height="50" alt="imgurl" />
+          )}
           <h4>{tweet.text}</h4>
           {/* 작성자만 수정/삭제 가능 */}
           {isOwner && (

@@ -4,25 +4,22 @@ import AppRouter from "components/Router";
 
 function App() {
   const [init, setInit] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(fbAuth.currentUser);
   const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
     // 로그인 상태 감지
     fbAuth.onAuthStateChanged((user) => {
-      if (user) {
-        setIsLoggedIn(true);
-        setUserInfo(user);
-      } else {
-        setIsLoggedIn(false);
-      }
+      user ? setUserInfo(user) : setUserInfo(null);
       setInit(true);
     });
   }, []);
   return (
     <>
       {init ? (
-        <AppRouter isLoggedIn={isLoggedIn} userInfo={userInfo} />
+        <AppRouter
+          isLoggedIn={Boolean(fbAuth.currentUser)}
+          userInfo={userInfo}
+        />
       ) : (
         "init"
       )}
