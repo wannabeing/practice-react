@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const Navigation = () => {
+const Navigation = ({ userInfo }) => {
   return (
     <nav>
       <ul>
@@ -9,7 +9,7 @@ const Navigation = () => {
           <Link to="/">홈</Link>
         </li>
         <li>
-          <Link to="/profile">마이페이지</Link>
+          <Link to="/profile">{userInfo.displayName}</Link>
         </li>
       </ul>
     </nav>
