@@ -9,7 +9,11 @@ const Navigation = ({ userInfo }) => {
           <Link to="/">홈</Link>
         </li>
         <li>
-          <Link to="/profile">{userInfo.displayName}</Link>
+          <Link to="/profile">
+            {userInfo.displayName
+              ? `${userInfo.displayName}'s 페이지`
+              : "마이페이지"}
+          </Link>
         </li>
       </ul>
     </nav>

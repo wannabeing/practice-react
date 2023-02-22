@@ -1,3 +1,4 @@
+import Tweet from "components/Tweet";
 import { fbAuth, fbStore } from "fb";
 import React, { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -6,6 +7,7 @@ import { useHistory } from "react-router-dom";
 export default ({ userInfo, refreshUserInfo }) => {
   const history = useHistory();
   const [newDname, setNewDname] = useState(userInfo.displayName);
+  const [myTweets, setMyTweets] = useState([]);
 
   // 로그아웃 함수
   const onLogout = () => {
@@ -14,16 +16,23 @@ export default ({ userInfo, refreshUserInfo }) => {
   };
   // 로그인 유저의 트윗리스트 가져오는 함수
   const getMyTweets = useCallback(async () => {
-    const myTweets = await fbStore
+    fbStore
       .collection("tweets")
       .where("uid", "==", userInfo.uid)
-      .orderBy("createdAt")
-      .get();
+      .orderBy("createdAt", "desc")
+      .onSnapshot((snapshot) => {
+        const updatedTweets = snapshot.docs.map((document) => ({
+          pid: document.id,
+          ...document.data(),
+        }));
+        setMyTweets(updatedTweets);
+      });
   }, [userInfo]);
 
   useEffect(() => {
     getMyTweets();
   }, [getMyTweets]);
+
   // 닉네임 변경 인풋 감지 함수
   const onChangeDname = (event) => {
     const { value } = event.target;
@@ -54,6 +63,16 @@ export default ({ userInfo, refreshUserInfo }) => {
       </form>
 
       <button onClick={onLogout}>로그아웃</button>
+
+      <div>
+        {myTweets.map((tweet) => (
+          <Tweet
+            key={tweet.pid}
+            tweet={tweet}
+            isOwner={tweet.uid === userInfo.uid}
+          />
+        ))}
+      </div>
     </>
   );
 };
